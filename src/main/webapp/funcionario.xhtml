@@ -1,0 +1,328 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">
+        <h:outputText value="Pessoa"></h:outputText>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="frmList">            
+            <h:panelGroup id="pngList"> 
+                <p:growl id="growl" showDetail="true" />
+                <p:fieldset toggleable="true">
+                    <p:dataTable id="datalist" value="#{pessoaController.pessoaList}" var="item"   
+                                 selectionMode="single" selection="#{pessoaController.selected}"
+                                 widgetVar="datalistPessoaWidgetVar"
+                                 rowKey="#{item.id}"
+                                 paginator="true"
+                                 rows="5"
+                                 rowsPerPageTemplate="5,10,50,100"
+                                 emptyMessage="Nenhuma pessoa cadastrada..."
+                                 >
+                        <!--Ação AJAX para atualizar somente os botões definidos em update -->
+                        <!--quando selecionado ou não -->
+                        <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView"/>
+                        <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView"/>
+
+                        <p:column width="4%" sortBy="#{item.id}" filterBy="#{item.id}">
+                            <f:facet name="header">
+                                <h:outputText value="ID"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </p:column>
+
+                        <p:column width="6%" sortBy="#{item.datahorareg}" filterBy="#{item.datahorareg}">
+                            <f:facet name="header">
+                                <h:outputText value="Registro"/>
+                            </f:facet>
+                            <h:outputText value="#{item.datahorareg}">
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/Sao_Paulo" />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column width="10%" sortBy="#{item.nome}" filterBy="#{item.nome}">
+                            <f:facet name="header">
+                                <h:outputText value="Nome"/>
+                            </f:facet>
+                            <h:outputText value="#{item.nome}"/>
+                        </p:column>
+
+                        <p:column width="6%" sortBy="#{item.dataNascimento}" filterBy="#{item.dataNascimento}">
+                            <f:facet name="header">
+                                <h:outputText value="Nascimento"/>
+                            </f:facet>
+                            <h:outputText value="#{item.dataNascimento}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"  />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column width="8%" sortBy="#{item.email}" filterBy="#{item.email}">
+                            <f:facet name="header">
+                                <h:outputText value="Email"/>
+                            </f:facet>
+                            <h:outputText value="#{item.email}"/>
+                        </p:column>
+
+                        <p:column width="5%" sortBy="#{item.fumante}" filterBy="#{item.fumante}">
+                            <f:facet name="header">
+                                <h:outputText value="Fumante"/>
+                            </f:facet>
+                            <h:outputText value="#{item.fumante}"/>
+                        </p:column>
+
+                        <p:column width="4%" sortBy="#{item.idade}" filterBy="#{item.idade}">
+                            <f:facet name="header">
+                                <h:outputText value="Idade"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idade}"/>
+                        </p:column>
+
+                        <p:column width="5%" sortBy="#{item.cidadania}" filterBy="#{item.cidadania}">
+                            <f:facet name="header">
+                                <h:outputText value="Cidadania"/>
+                            </f:facet>
+                            <h:outputText value="#{item.cidadania}"/>
+                        </p:column>
+
+                        <p:column width="12%" sortBy="#{item.idCidade.nome}"  filterBy="#{item.idCidade.nome}" 
+                                  filterMatchMode="contains"> 
+                            <f:facet name="header">
+                                <h:outputText value="Cidade"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idCidade.nome}"/>
+                        </p:column>
+
+                        <p:column width="8%" sortBy="#{item.observacao}" filterBy="#{item.observacao}">
+                            <f:facet name="header">
+                                <h:outputText value="Observacao"/>
+                            </f:facet>
+                            <h:outputText value="#{item.observacao}"/>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <!--Botão utilizado para abrir a modal de criação -->
+                            <p:commandButton id="btnCreate" value="Incluir Pessoa"  icon="pi pi-file" 
+                                             actionListener="#{pessoaController.prepareAdicionar()}"
+                                             update=":CreateForm"
+                                             onclick="PF('dlgCreate').show()"/>  
+
+                            <!--Botão utilizado para abrir a modal de edição -->
+                            <p:commandButton id="btnEdit" icon="pi pi-user-edit"  value="Editar Pessoa" 
+                                             update="formEdit" oncomplete="PF('dlgEdit').show()" 
+                                             disabled="#{empty pessoaController.selected}"/>
+
+                            <!--Botão utilizado para excluir o registro selecionado-->                            
+                            <p:commandButton id="btnDelete" icon="pi pi-trash"  value="Excluir Pessoa" 
+                                             actionListener="#{pessoaController.deletarPessoa()}" update="frmList" 
+                                             disabled="#{empty pessoaController.selected}">
+                                <p:confirm header="Confirmar Exclusão" message="Você confirma exclusão do registro?" 
+                                           icon="ui-icon-alert"  />
+                            </p:commandButton>
+
+                            <!--Botão utilizado para abrir a modal de visualização -->
+                            <p:commandButton id="btnView" icon="pi pi-user-edit"  value="Detalhes da Pessoa" 
+                                             update="formView" oncomplete="PF('dlgView').show()" 
+                                             disabled="#{empty pessoaController.selected}"/>
+
+                        </f:facet>
+                    </p:dataTable>
+                </p:fieldset>
+                <!--Diálogo para confirmação da exclusão -->
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
+                </p:confirmDialog>
+
+            </h:panelGroup>
+        </h:form>
+
+        <p:dialog header="Nova Pessoa" widgetVar="dlgCreate" height="450" width="600" showEffect="fade" modal="true">
+            <h:form id="CreateForm">
+                <p:growl id="growl" showDetail="true" />
+                <h:panelGrid id="pngCadastro" columns="2">   
+                    <p:outputLabel id="oplNome" value="Nome:" for="iptNome"/>
+                    <p:inputText id="iptNome" size="40" label="Nome" required="true" 
+                                 requiredMessage="O atributo nome é obrigatório"
+                                 value="#{pessoaController.pessoa.nome}" maxlength="50" />                    
+
+                    <p:outputLabel id="oplDataNascimento" for="ipmDataNascimento" value="Data de Nascimento"  />
+                    <p:inputMask id="ipmDataNascimento" value="#{pessoaController.pessoa.dataNascimento}" 
+                                 mask="99/99/9999" required="true" requiredMessage="O atributo data de nascimento é obrigatório">
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
+                    </p:inputMask>
+
+                    <p:outputLabel id="oplEmail" value="Email:" for="iptEmail"/>
+                    <p:inputText id="iptEmail" size="40" label="Nome" required="true" 
+                                 requiredMessage="O atributo email é obrigatório" validatorMessage="Campo email é inválido"
+                                 value="#{pessoaController.pessoa.email}" maxlength="50" >
+                        <f:validateRegex pattern="[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})"  />
+                    </p:inputText>
+                    
+                    <p:outputLabel id="oplSenha" value="Senha:" for="iptSenha"/>
+                    <p:inputText id="iptSenha" size="40" label="Senha" required="true" 
+                                 requiredMessage="O atributo senha é obrigatório"
+                                 value="#{pessoaController.pessoa.senha}" />
+
+                    <p:outputLabel id="oplIdade" value="Idade (anos):" for="iptIdade"/>
+                    <p:inputNumber id="iptIdade" value="#{pessoaController.pessoa.idade}" minValue="1" decimalPlaces="0" />
+
+                    <p:outputLabel id="oplEfumante" value="É fumante?" for="sbbEfumante"/>
+                    <p:selectBooleanButton id="sbbEfumante" onIcon="pi pi-check" offIcon="pi pi-times" 
+                                           value="#{pessoaController.pessoa.fumante}"/>
+
+                    <p:outputLabel id="oplCidadania" value="Cidadania: " for="somCidadania"/>
+                    <p:selectOneMenu id="somCidadania" value="#{pessoaController.pessoa.cidadania}">
+                        <f:selectItem itemLabel="Selecione uma opção" itemValue=""/>
+                        <f:selectItem itemLabel="Brasileiro" itemValue="brasileiro"/>
+                        <f:selectItem itemLabel="Argentino" itemValue="argentino"/>
+                        <f:selectItem itemLabel="Uruguaio" itemValue="uruguaio"/>
+                    </p:selectOneMenu>                      
+
+                    <p:outputLabel value="Cidade: " for="idCidade" />
+                    <p:selectOneMenu id="idCidade" value="#{pessoaController.pessoa.idCidade}" 
+                                     required="false" requiredMessage="O atributo cidade é obrigatório!"
+                                     panelStyle="width:180px" filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="Selecione uma cidade..."/>                        
+                        <f:selectItems value="#{cidadeController.cidadeAll()}"
+                                       var="idCidadeItem"
+                                       itemValue="#{idCidadeItem}"
+                                       itemLabel="#{idCidadeItem.nome}"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel id="oplObservacao" value="Obervação:  " for="somObservacao"/>
+                    <p:inputTextarea id="somObservacao" rows="4" cols="40" autoResize="false" 
+                                     value="#{pessoaController.pessoa.observacao}"/>
+
+                </h:panelGrid>   
+                
+                <p:commandButton actionListener="#{pessoaController.adicionarPessoa()}" 
+                                 icon="pi pi-save" value="Cadastrar" 
+                                 update=":frmList, CreateForm" 
+                                onclick="dlgCreate.hide()"/>
+                    
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Editar Pessoa" widgetVar="dlgEdit"  height="500" width="600" showEffect="fade" modal="true">
+            <h:form id="formEdit">
+                <p:growl id="growl" showDetail="true" />
+                <h:panelGrid id="pngEdicao" columns="2" rendered="#{pessoaController.selected != null}">   
+                    <p:outputLabel id="oplId" value="ID:" for="iptId"/>
+                    <p:inputText id="iptId" size="10" label="ID" disabled="true"
+                                 value="#{pessoaController.selected.id}"  />
+
+                    <p:outputLabel id="oplDatahorareg" for="ipmDatahorareg" value="Registro"  />
+                    <p:inputText id="ipmDatahorareg" value="#{pessoaController.selected.datahorareg}"  disabled="true">
+                        <f:convertDateTime pattern="dd/MM/yy HH:mm" timeZone="America/Sao_Paulo" />
+                    </p:inputText>
+
+                    <p:outputLabel id="oplNome" value="Nome:" for="iptNome"/>
+                    <p:inputText id="iptNome" size="40" label="Nome" required="true" 
+                                 requiredMessage="O atributo nome é obrigatório"
+                                 value="#{pessoaController.selected.nome}" maxlength="50" />
+
+                    <p:outputLabel id="oplDataNascimento" for="ipmDataNascimento" value="Data de Nascimento"  />
+                    <p:inputMask id="ipmDataNascimento" value="#{pessoaController.selected.dataNascimento}" 
+                                 mask="99/99/9999" required="true" requiredMessage="O atributo data de nascimento é obrigatório">
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
+                    </p:inputMask>
+
+                    <p:outputLabel id="oplEmail" value="Email:" for="iptEmail"/>
+                    <p:inputText id="iptEmail" size="40" label="Nome" required="true" 
+                                 requiredMessage="O atributo email é obrigatório" validatorMessage="Campo email é inválido"
+                                 value="#{pessoaController.selected.email}" maxlength="50" >
+                        <f:validateRegex pattern="[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})"  />
+                    </p:inputText>
+
+                    <p:outputLabel id="oplSenha" value="Senha:" for="iptSenha"/>
+                    <p:inputText id="iptSenha" size="40" label="Senha" required="true" 
+                                 requiredMessage="O atributo senha é obrigatório"
+                                 value="#{pessoaController.selected.senha}" />
+
+                    <p:outputLabel id="oplIdade" value="Idade (anos):" for="iptIdade"/>
+                    <p:inputNumber id="iptIdade" value="#{pessoaController.selected.idade}" minValue="1" decimalPlaces="0" />
+
+                    <p:outputLabel id="oplEfumante" value="É fumante?" for="sbbEfumante"/>
+                    <p:selectBooleanButton id="sbbEfumante" onIcon="pi pi-check" offIcon="pi pi-times" 
+                                           value="#{pessoaController.selected.fumante}"/>
+
+                    <p:outputLabel id="oplCidadania" value="Cidadania: " for="somCidadania"/>
+                    <p:selectOneMenu id="somCidadania" value="#{pessoaController.selected.cidadania}">
+                        <f:selectItem itemLabel="Selecione uma opção" itemValue=""/>
+                        <f:selectItem itemLabel="Brasileiro" itemValue="brasileiro"/>
+                        <f:selectItem itemLabel="Argentino" itemValue="argentino"/>
+                        <f:selectItem itemLabel="Uruguaio" itemValue="uruguaio"/>
+                    </p:selectOneMenu>
+                    
+                    <p:outputLabel value="Cidade: " for="idCidade" />
+                    <p:selectOneMenu id="idCidade" value="#{pessoaController.selected.idCidade}" 
+                                     required="false" requiredMessage="O atributo cidade é obrigatório!"
+                                     panelStyle="width:180px" filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="Selecione uma cidade..."/>                        
+                        <f:selectItems value="#{cidadeController.cidadeAll()}"
+                                       var="idCidadeItem"
+                                       itemValue="#{idCidadeItem}"
+                                       itemLabel="#{idCidadeItem.nome}"/>
+                    </p:selectOneMenu>
+
+                    <p:outputLabel id="oplObservacao" value="Obervação:  " for="somObservacao"/>
+                    <p:inputTextarea id="somObservacao" rows="4" cols="40" autoResize="false" 
+                                     value="#{pessoaController.selected.observacao}"/>
+
+                </h:panelGrid>   
+                <p:commandButton id="btnSalvarEdicao" value="Salvar" update="@form, :frmList" 
+                                 onclick="dlgEdit.hide()" icon="pi pi-save"
+                                 action="#{pessoaController.editarPessoa()}" />
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Visualizar Detalhes da Pessoa" widgetVar="dlgView"  height="250" 
+                  width="500" showEffect="fade" modal="true">
+            <h:form id="formView">
+                <h:panelGrid id="pngView" columns="2" rendered="#{pessoaController.selected != null}">    
+                    <p:outputLabel value="ID:" />
+                    <p:outputLabel value="#{pessoaController.selected.id}"  />
+
+                    <p:outputLabel value="Registro"  />
+                    <p:outputLabel value="#{pessoaController.selected.datahorareg}"  >
+                        <f:convertDateTime pattern="dd/MM/yy HH:mm"  />
+                    </p:outputLabel>
+
+                    <p:outputLabel value="Nome: " />
+                    <p:outputLabel value="#{pessoaController.selected.nome}" />
+
+                    <p:outputLabel value="Data de Nascimento: "  />
+                    <p:outputLabel value="#{pessoaController.selected.dataNascimento}" >
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
+                    </p:outputLabel>
+
+                    <p:outputLabel value="Email: " />                    
+                    <p:outputLabel value="#{pessoaController.selected.email}" />
+
+                    <p:outputLabel value="Idade (anos):"/>
+                    <p:outputLabel value="#{pessoaController.selected.idade}" />
+
+                    <p:outputLabel value="É fumante? "/>
+                    <p:outputLabel value="#{pessoaController.selected.fumante}"/>
+
+                    <p:outputLabel value="Cidadania: "/>
+                    <p:outputLabel value="#{pessoaController.selected.cidadania}" />
+                    
+                    <p:outputLabel value="Cidade: "/>
+                    <p:outputLabel value="#{pessoaController.selected.idCidade.nome}" />
+
+                    <p:outputLabel value="Obervação:  "/>
+                    <p:outputLabel value="#{pessoaController.selected.observacao}"/>
+
+                </h:panelGrid>   
+            </h:form>
+        </p:dialog>
+    </ui:define>
+
+</ui:composition>
+
+
