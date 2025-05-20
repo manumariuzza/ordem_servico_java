@@ -54,17 +54,10 @@ public class AutomovelController implements Serializable {
         this.automovel = automovel;
     }
 
-    
     public AutomovelEntity getAutomovel(java.lang.Integer id) {
         return ejbFacade.find(id);
     }
 
-    /**
-     * Método responsável por tratar das conversões para o front (xhtml). Como
-     * no exemplo do atributo idCidade que consta no objeto PessoaEntity, sem
-     * essa conversão, quando tentar salvar uma pessoa, ocorre erro na coversão
-     * de null para CidadeEntity no objeto PessoaEntity.
-     */
     @FacesConverter(forClass = AutomovelEntity.class)
     public static class AutomovelControllerConverter implements Converter {
 
@@ -108,7 +101,7 @@ public class AutomovelController implements Serializable {
     }
     
     /**
-     * Método utilizado para executar algumas ações antes de abrir o formulário
+     * Método utilizado para executar algumas de abrir o formulário
      * de criação de um automovel
      * @return
      */
@@ -129,9 +122,6 @@ public class AutomovelController implements Serializable {
         FacesContext.getCurrentInstance().addMessage("successInfo", facesMsg);
     }
 
-    /**
-     * declaração de uma classe enum disponivel para classe
-     */
     public static enum PersistAction {
         CREATE,
         DELETE,

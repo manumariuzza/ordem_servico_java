@@ -58,12 +58,6 @@ public class CidadeController implements Serializable {
         return ejbFacade.find(id);
     }
 
-    /**
-     * Método responsável por tratar das conversões para o front (xhtml). Como
-     * no exemplo do atributo idCidade que consta no objeto PessoaEntity, sem
-     * essa conversão, quando tentar salvar uma pessoa, ocorre erro na coversão
-     * de null para CidadeEntity no objeto PessoaEntity.
-     */
     @FacesConverter(forClass = CidadeEntity.class)
     public static class CidadeControllerConverter implements Converter {
 
@@ -128,9 +122,6 @@ public class CidadeController implements Serializable {
         FacesContext.getCurrentInstance().addMessage("successInfo", facesMsg);
     }
 
-    /**
-     * declaração de uma classe enum disponivel para classe
-     */
     public static enum PersistAction {
         CREATE,
         DELETE,

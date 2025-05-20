@@ -20,7 +20,7 @@ public class FuncionarioController implements Serializable {
     @EJB
     private br.upf.projetojfprimefaces.facade.FuncionarioFacade ejbFacade;
 
-    //objeto que representa uma pessoa
+    //objeto que representa uma pessoa mais entidade
     private FuncionarioEntity pessoa = new FuncionarioEntity();
     //objeto que representa uma lista de pessoas
     private List<FuncionarioEntity> pessoaList = new ArrayList<>();

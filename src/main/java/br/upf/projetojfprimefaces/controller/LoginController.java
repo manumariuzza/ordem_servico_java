@@ -23,6 +23,7 @@ public class LoginController implements Serializable {
     //objeto que representa uma pessoa
     private PessoaEntity pessoa;
 
+    //objeto para autenticar
     public void prepareAutenticarPessoa() {
         pessoa = new PessoaEntity();
     }

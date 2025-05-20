@@ -64,7 +64,6 @@ public class PessoaController implements Serializable {
     }
 
     public void adicionarPessoa() {
-        //buscando a datahoraatual do sistema.
         Date datahoraAtual = new Timestamp(System.currentTimeMillis());
         pessoa.setDatahorareg(datahoraAtual);
         persist(PessoaController.PersistAction.CREATE, 
@@ -91,9 +90,6 @@ public class PessoaController implements Serializable {
         FacesContext.getCurrentInstance().addMessage("successInfo", facesMsg);
     }
 
-    /**
-     * declaração de uma classe enum disponivel para classe
-     */
     public static enum PersistAction {
         CREATE,
         DELETE,
