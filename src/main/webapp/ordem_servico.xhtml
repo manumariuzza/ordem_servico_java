@@ -1,0 +1,391 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">
+        <h:outputText value="Ordem de Serviço"></h:outputText>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="frmList">            
+            <h:panelGroup id="pngList"> 
+                <p:growl id="growl" showDetail="true" />
+                <p:fieldset toggleable="true">
+                    <p:dataTable id="datalist" value="#{ordemController.ordemList}" var="item"   
+                                 selectionMode="single" selection="#{ordemController.selected}"
+                                 widgetVar="datalistOrdemWidgetVar"
+                                 rowKey="#{item.id}"
+                                 paginator="true"
+                                 rows="5"
+                                 rowsPerPageTemplate="5,10,50,100"
+                                 emptyMessage="Nenhuma ordem de serviço cadastrada..."
+                                 >
+                        <!--Ação AJAX para atualizar somente os botões definidos em update -->
+                        <!--quando selecionado ou não -->
+                        <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView"/>
+                        <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView"/>
+
+
+                        <p:column width="4%" sortBy="#{item.id}" filterBy="#{item.id}">
+                            <f:facet name="header">
+                                <h:outputText value="ID"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </p:column>
+
+                        <p:column width="12%" sortBy="#{item.idPessoa.nome}"  filterBy="#{item.idPessoa.nome}" 
+                                  filterMatchMode="contains"> 
+                            <f:facet name="header">
+                                <h:outputText value="Cliente"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idPessoa.nome}"/>
+                        </p:column>
+
+                        <p:column width="12%" sortBy="#{item.idAutomovel.nome}"  filterBy="#{item.idAutomovel.nome}" 
+                                  filterMatchMode="contains"> 
+                            <f:facet name="header">
+                                <h:outputText value="Automovel"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idAutomovel.nome}"/>
+                        </p:column>
+
+                        <p:column width="12%" sortBy="#{item.idAutomovel.placa}"  filterBy="#{item.idAutomovel.placa}" 
+                                  filterMatchMode="contains"> 
+                            <f:facet name="header">
+                                <h:outputText value="Placa"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idAutomovel.placa}"/>
+                        </p:column>
+
+                        <p:column width="12%" sortBy="#{item.idFuncionario.nome}"  filterBy="#{item.idFuncionario.nome}" 
+                                  filterMatchMode="contains"> 
+                            <f:facet name="header">
+                                <h:outputText value="Tecnico"/>
+                            </f:facet>
+                            <h:outputText value="#{item.idFuncionario.nome}"/>
+                        </p:column>
+
+                        <p:column width="6%" sortBy="#{item.dataInicio}" filterBy="#{item.dataInicio}">
+                            <f:facet name="header">
+                                <h:outputText value="Data Inicio"/>
+                            </f:facet>
+                            <h:outputText value="#{item.dataInicio}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"  />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column width="6%" sortBy="#{item.dataFim}" filterBy="#{item.dataFim}">
+                            <f:facet name="header">
+                                <h:outputText value="Data Fim"/>
+                            </f:facet>
+                            <h:outputText value="#{item.dataFim}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"  />
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column width="8%" sortBy="#{item.problema}" filterBy="#{item.problema}">
+                            <f:facet name="header">
+                                <h:outputText value="Problema"/>
+                            </f:facet>
+                            <h:outputText value="#{item.problema}"/>
+                        </p:column>
+
+                        <p:column width="8%" sortBy="#{item.diagnostico}" filterBy="#{item.diagnostico}">
+                            <f:facet name="header">
+                                <h:outputText value="Diagnostico"/>
+                            </f:facet>
+                            <h:outputText value="#{item.diagnostico}"/>
+                        </p:column>
+
+                        <p:column width="8%" sortBy="#{item.observacao}" filterBy="#{item.observacao}">
+                            <f:facet name="header">
+                                <h:outputText value="Observacao"/>
+                            </f:facet>
+                            <h:outputText value="#{item.observacao}"/>
+                        </p:column>
+
+
+                        <p:column width="4%" sortBy="#{item.valor}" filterBy="#{item.valor}">
+                            <f:facet name="header">
+                                <h:outputText value="Valor"/>
+                            </f:facet>
+                            <h:outputText value="#{item.valor}"/>
+                        </p:column>
+
+
+                        <p:column width="8%" sortBy="#{item.situacao}" filterBy="#{item.situacao}">
+                            <f:facet name="header">
+                                <h:outputText value="Situacao"/>
+                            </f:facet>
+                            <h:outputText value="#{item.situacao}"/>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <!--Botão utilizado para abrir a modal de criação -->
+                            <p:commandButton id="btnCreate" value="Incluir Ordem"  icon="pi pi-file" 
+                                             actionListener="#{ordemController.prepareAdicionar()}"
+                                             update=":CreateForm"
+                                             onclick="PF('dlgCreate').show()"/>  
+
+                            <!--Botão utilizado para abrir a modal de edição -->
+                            <p:commandButton id="btnEdit" icon="pi pi-user-edit"  value="Editar Ordem" 
+                                             update="formEdit" oncomplete="PF('dlgEdit').show()" 
+                                             disabled="#{empty ordemController.selected}"/>
+
+                            <!--Botão utilizado para excluir o registro selecionado-->                            
+                            <p:commandButton id="btnDelete" icon="pi pi-trash"  value="Excluir Ordem" 
+                                             actionListener="#{ordemController.deletarOrdem()}" update="frmList" 
+                                             disabled="#{empty ordemController.selected}">
+                                <p:confirm header="Confirmar Exclusão" message="Você confirma exclusão do registro?" 
+                                           icon="ui-icon-alert"  />
+                            </p:commandButton>
+
+                            <!--Botão utilizado para abrir a modal de visualização -->
+                            <p:commandButton id="btnView" icon="pi pi-user-edit"  value="Detalhes da Ordem" 
+                                             update="formView" oncomplete="PF('dlgView').show()" 
+                                             disabled="#{empty ordemController.selected}"/>
+
+                        </f:facet>
+                    </p:dataTable>
+                </p:fieldset>
+                <!--Diálogo para confirmação da exclusão -->
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
+                </p:confirmDialog>
+
+            </h:panelGroup>
+        </h:form>
+
+        
+        <p:dialog header="Nova Pessoa" widgetVar="dlgCreate" height="450" width="600" showEffect="fade" modal="true">
+            <h:form id="CreateForm">
+                <p:growl id="growl" showDetail="true" />
+                <h:panelGrid id="pngCadastro" columns="2">   
+                    
+                    
+                    
+                    
+                    <p:outputLabel value="Cliente: " />
+                    <p:selectOneMenu value="#{ordemController.ordem.idPessoa}" 
+                                     required="false" requiredMessage="O atributo cliente é obrigatório!"
+                                     converter="omnifaces.SelectItemsConverter"
+                                     filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="Selecione um cliente..."/>                        
+                        <f:selectItems value="#{pessoaController.pessoaList}" var="idClienteItem"
+                                       itemValue="#{idClienteItem}"
+                                       itemLabel="#{idClienteItem.nome}"/>
+                     </p:selectOneMenu>    
+                    
+                    <p:outputLabel value="Automóvel: "  />
+                    <p:selectOneMenu value="#{ordemController.ordem.idAutomovel}" 
+                                     required="false" requiredMessage="O atributo automóvel é obrigatório!"
+                                     converter="omnifaces.SelectItemsConverter"
+                                     filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="Selecione um automóvel..."/>                        
+                        <f:selectItems value="#{automovelController.automovelList}"
+                                       var="idAutomovelItem"
+                                       itemValue="#{idAutomovelItem}"
+                                       itemLabel="#{idAutomovelItem.nome}"/>
+                    </p:selectOneMenu>     
+
+                    <p:outputLabel value="Técnico: "  />
+                    <p:selectOneMenu  value="#{ordemController.ordem.idFuncionario}" 
+                                     required="false" requiredMessage="O atributo funcionário é obrigatório!"
+                                     converter="omnifaces.SelectItemsConverter"
+                                     filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="Selecione um funcionário..."/>                        
+                        <f:selectItems value="#{funcionarioController.funcionarioList}"
+                                       var="idFuncionarioItem"
+                                       itemValue="#{idFuncionarioItem}"
+                                       itemLabel="#{idFuncionarioItem.nome}"/>
+                    </p:selectOneMenu>     
+                    
+                    <p:outputLabel id="oplDataInicio" for="ipmDataInicio" value="Data Inicio"  />
+                    <p:inputMask id="ipmDataInicio" value="#{ordemController.ordem.dataInicio}" 
+                                 mask="99/99/9999" required="true" requiredMessage="O atributo data de inicio é obrigatório">
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
+                    </p:inputMask>
+                    
+                    
+                    <p:outputLabel id="oplDataFim" for="ipmDataFim" value="Data Fim"  />
+                    <p:inputMask id="ipmDataFim" value="#{ordemController.ordem.dataFim}" 
+                                 mask="99/99/9999" required="false" >
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
+                    </p:inputMask>
+
+                    <p:outputLabel id="oplSituacao" value="Situação: " for="somSituacao"/>
+                    <p:selectOneMenu id="somSituacao" value="#{ordemController.ordem.situacao}">
+                        <f:selectItem itemLabel="Selecione uma situação:" itemValue=""/>
+                        <f:selectItem itemLabel="Em Espera" itemValue="espera"/>
+                        <f:selectItem itemLabel="Finalizada" itemValue="finalizada"/>
+                        <f:selectItem itemLabel="Não Iniciada" itemValue="iniciada"/>
+                    </p:selectOneMenu>
+                    
+                    
+                    <p:outputLabel id="oplValor" value="Valor:  " for="somValor"/>
+                    <p:inputTextarea id="somValor" rows="4" cols="40" autoResize="false" 
+                                     value="#{ordemController.ordem.valor}"/>
+                    
+                    <p:outputLabel id="oplProblema" value="Problema:  " for="somProblema"/>
+                    <p:inputTextarea id="somProblema" rows="4" cols="40" autoResize="false" 
+                                     value="#{ordemController.ordem.problema}"/>
+                    
+
+                    <p:outputLabel id="op2Observacao" value="Observação:  " for="som2Observacao"/>
+                    <p:inputTextarea id="som2Observacao" rows="4" cols="40" autoResize="false" 
+                                     value="#{ordemController.ordem.observacao}"/>
+                    
+                    <p:outputLabel id="oplDiagnostico" value="Diagnóstico:  " for="somDiagnostico"/>
+                    <p:inputTextarea id="somDiagnostico" rows="4" cols="40" autoResize="false" 
+                                     value="#{ordemController.ordem.diagnostico}"/>
+
+                </h:panelGrid>   
+                
+                <p:commandButton actionListener="#{ordemController.adicionarOrdem()}" 
+                                 icon="pi pi-save" value="Cadastrar" 
+                                 update=":frmList, CreateForm" 
+                                onclick="dlgCreate.hide()"/>
+                    
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Editar Ordem" widgetVar="dlgEdit"  height="500" width="600" showEffect="fade" modal="true">
+            <h:form id="formEdit">
+                <p:growl id="growl" showDetail="true" />
+                <h:panelGrid id="pngEdicao" columns="2" rendered="#{pessoaController.selected != null}">   
+                    <p:outputLabel value="Cliente: " />
+                    <p:selectOneMenu value="#{ordemController.ordem.idPessoa}" 
+                                     required="false" requiredMessage="O atributo cliente é obrigatório!"
+                                     converter="omnifaces.SelectItemsConverter"
+                                     filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="Selecione um cliente..."/>                        
+                        <f:selectItems value="#{pessoaController.pessoaList}" var="idClienteItem"
+                                       itemValue="#{idClienteItem}"
+                                       itemLabel="#{idClienteItem.nome}"/>
+                     </p:selectOneMenu>    
+                    
+                    <p:outputLabel value="Automóvel: "  />
+                    <p:selectOneMenu value="#{ordemController.ordem.idAutomovel}" 
+                                     required="false" requiredMessage="O atributo automóvel é obrigatório!"
+                                     converter="omnifaces.SelectItemsConverter"
+                                     filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="Selecione um automóvel..."/>                        
+                        <f:selectItems value="#{automovelController.automovelList}"
+                                       var="idAutomovelItem"
+                                       itemValue="#{idAutomovelItem}"
+                                       itemLabel="#{idAutomovelItem.nome}"/>
+                    </p:selectOneMenu>     
+
+                    <p:outputLabel value="Técnico: "  />
+                    <p:selectOneMenu  value="#{ordemController.ordem.idFuncionario}" 
+                                     required="false" requiredMessage="O atributo funcionário é obrigatório!"
+                                     converter="omnifaces.SelectItemsConverter"
+                                     filter="true" filterMatchMode="contains">
+                        <f:selectItem itemLabel="Selecione um funcionário..."/>                        
+                        <f:selectItems value="#{funcionarioController.funcionarioList}"
+                                       var="idFuncionarioItem"
+                                       itemValue="#{idFuncionarioItem}"
+                                       itemLabel="#{idFuncionarioItem.nome}"/>
+                    </p:selectOneMenu>     
+                    
+                    <p:outputLabel id="oplDataInicio" for="ipmDataInicio" value="Data Inicio"  />
+                    <p:inputMask id="ipmDataInicio" value="#{ordemController.ordem.dataInicio}" 
+                                 mask="99/99/9999" required="true" requiredMessage="O atributo data de inicio é obrigatório">
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
+                    </p:inputMask>
+                    
+                    
+                    <p:outputLabel id="oplDataFim" for="ipmDataFim" value="Data Fim"  />
+                    <p:inputMask id="ipmDataFim" value="#{ordemController.ordem.dataFim}" 
+                                 mask="99/99/9999" required="false" >
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
+                    </p:inputMask>
+
+                    <p:outputLabel id="oplSituacao" value="Situação: " for="somSituacao"/>
+                    <p:selectOneMenu id="somSituacao" value="#{ordemController.ordem.situacao}">
+                        <f:selectItem itemLabel="Selecione uma situação:" itemValue=""/>
+                        <f:selectItem itemLabel="Em Espera" itemValue="espera"/>
+                        <f:selectItem itemLabel="Finalizada" itemValue="finalizada"/>
+                        <f:selectItem itemLabel="Não Iniciada" itemValue="iniciada"/>
+                    </p:selectOneMenu>
+                    
+                    
+                    <p:outputLabel id="oplValor" value="Valor:  " for="somValor"/>
+                    <p:inputTextarea id="somValor" rows="4" cols="40" autoResize="false" 
+                                     value="#{ordemController.ordem.valor}"/>
+                    
+                    <p:outputLabel id="oplProblema" value="Problema:  " for="somProblema"/>
+                    <p:inputTextarea id="somProblema" rows="4" cols="40" autoResize="false" 
+                                     value="#{ordemController.ordem.problema}"/>
+                    
+
+                    <p:outputLabel id="op2Observacao" value="Observação:  " for="som2Observacao"/>
+                    <p:inputTextarea id="som2Observacao" rows="4" cols="40" autoResize="false" 
+                                     value="#{ordemController.ordem.observacao}"/>
+                    
+                    <p:outputLabel id="oplDiagnostico" value="Diagnóstico:  " for="somDiagnostico"/>
+                    <p:inputTextarea id="somDiagnostico" rows="4" cols="40" autoResize="false" 
+                                     value="#{ordemController.ordem.diagnostico}"/>
+
+                </h:panelGrid>   
+                <p:commandButton id="btnSalvarEdicao" value="Salvar" update="@form, :frmList" 
+                                 onclick="dlgEdit.hide()" icon="pi pi-save"
+                                 action="#{ordemController.editarOrdem()}" />
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Visualizar Detalhes da Ordem" widgetVar="dlgView"  height="250" 
+                  width="500" showEffect="fade" modal="true">
+            <h:form id="formView">
+                <h:panelGrid id="pngView" columns="2" rendered="#{ordemController.selected != null}">    
+                    <p:outputLabel value="ID:" />
+                    <p:outputLabel value="#{ordemController.selected.id}"  />
+
+
+                    <p:outputLabel value="Cliente: " />
+                    <p:outputLabel value="#{ordemController.selected.idPessoa.nome}" />
+                    
+                    <p:outputLabel value="Automóvel: " />
+                    <p:outputLabel value="#{ordemController.selected.idAutomovel.nome}" />
+                    
+                    <p:outputLabel value="Técnico: " />
+                    <p:outputLabel value="#{ordemController.selected.idFuncionario.nome}" />
+
+                    <p:outputLabel value="Data Inicio "  />
+                    <p:outputLabel value="#{ordemController.selected.dataInicio}" >
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
+                    </p:outputLabel>
+                    
+                    <p:outputLabel value="Data Fim "  />
+                    <p:outputLabel value="#{ordemController.selected.dataFim}" >
+                        <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
+                    </p:outputLabel>
+
+                    <p:outputLabel value="Valor: " />                    
+                    <p:outputLabel value="#{ordemController.selected.valor}" />
+
+                    <p:outputLabel value="Situação: "/>
+                    <p:outputLabel value="#{ordemController.selected.situacao}" />
+
+
+                    <p:outputLabel value="Problema: "/>
+                    <p:outputLabel value="#{ordemController.selected.problema}" />
+
+                    <p:outputLabel value="Diagnóstico: "/>
+                    <p:outputLabel value="#{ordemController.selected.diagnostico}" />
+
+                    <p:outputLabel value="Obervação:  "/>
+                    <p:outputLabel value="#{ordemController.selected.observacao}"/>
+
+                </h:panelGrid>   
+            </h:form>
+        </p:dialog>
+    </ui:define>
+
+</ui:composition>
+
+
