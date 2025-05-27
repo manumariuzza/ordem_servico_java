@@ -28,16 +28,19 @@ public class FuncionarioController implements Serializable {
     private FuncionarioEntity selected;
 
     //atributo que será utilizado no momento da seleção da linha na datatable
+    public void setSelected(FuncionarioEntity selected) {
+        this.selected = selected;
+    }
     public FuncionarioEntity getSelected() {
         return selected;
     }
 
-    public void setSelected(FuncionarioEntity selected) {
-        this.selected = selected;
-    }
-
     public FuncionarioEntity getFuncionario() {
         return funcionario;
+    }
+
+    public void setPessoaList(List<FuncionarioEntity> funcionarioList) {
+        this.funcionarioList = funcionarioList;
     }
 
     public void setFuncionario(FuncionarioEntity funcionario) {
@@ -48,9 +51,6 @@ public class FuncionarioController implements Serializable {
         return ejbFacade.buscarTodos();
     }
 
-    public void setPessoaList(List<FuncionarioEntity> funcionarioList) {
-        this.funcionarioList = funcionarioList;
-    }
 
     /**
      * Método utilizado para executar algumas ações antes de abrir o formulário
@@ -69,19 +69,20 @@ public class FuncionarioController implements Serializable {
                 "Registro incluído com sucesso!");
     }
 
-    public void editarFuncionario() {
-        persist(FuncionarioController.PersistAction.UPDATE, 
-                "Registro alterado com sucesso!");
-    }
-
     public void deletarFuncionario() {
         persist(FuncionarioController.PersistAction.DELETE, 
                 "Registro excluído com sucesso!");
     }
 
+
     public static void addErrorMessage(String msg) {
         FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg);
         FacesContext.getCurrentInstance().addMessage(null, facesMsg);
+    }
+    
+    public void editarFuncionario() {
+        persist(FuncionarioController.PersistAction.UPDATE, 
+                "Registro alterado com sucesso!");
     }
 
     public static void addSuccessMessage(String msg) {

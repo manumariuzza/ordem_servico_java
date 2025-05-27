@@ -28,34 +28,34 @@ public class CidadeController implements Serializable {
     public List<CidadeEntity> cidadeAll() {
         return ejbFacade.buscarTodos();
     }
+    public CidadeEntity getCidade() {
+        return cidade;
+    }
 
     public List<CidadeEntity> getCidadeList() {
         return cidadeList;
     }
 
+    public void setSelected(CidadeEntity selected) {
+        this.selected = selected;
+    }
     public void setCidadeList(List<CidadeEntity> cidadeList) {
         this.cidadeList = cidadeList;
     }
 
+
+
+    public CidadeEntity getCidade(java.lang.Integer id) {
+        return ejbFacade.find(id);
+    }
+    
     public CidadeEntity getSelected() {
         return selected;
     }
-
-    public void setSelected(CidadeEntity selected) {
-        this.selected = selected;
-    }
-
-    public CidadeEntity getCidade() {
-        return cidade;
-    }
+    
 
     public void setCidade(CidadeEntity cidade) {
         this.cidade = cidade;
-    }
-
-    
-    public CidadeEntity getCidade(java.lang.Integer id) {
-        return ejbFacade.find(id);
     }
 
     @FacesConverter(forClass = CidadeEntity.class)
@@ -73,17 +73,17 @@ public class CidadeController implements Serializable {
             return controller.getCidade(getKey(value));
         }
 
+        String getStringKey(java.lang.Integer value) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(value);
+            return sb.toString();
+        }
         java.lang.Integer getKey(String value) {
             java.lang.Integer key;
             key = Integer.valueOf(value);
             return key;
         }
 
-        String getStringKey(java.lang.Integer value) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(value);
-            return sb.toString();
-        }
 
         @Override
         public String getAsString(FacesContext facesContext,
@@ -110,17 +110,17 @@ public class CidadeController implements Serializable {
         return cidade;
     }    
 
+    public static void addSuccessMessage(String msg) {
+        FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_INFO,
+                msg, msg);
+        FacesContext.getCurrentInstance().addMessage("successInfo", facesMsg);
+    }
     public static void addErrorMessage(String msg) {
         FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_ERROR,
                 msg, msg);
         FacesContext.getCurrentInstance().addMessage(null, facesMsg);
     }
 
-    public static void addSuccessMessage(String msg) {
-        FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_INFO,
-                msg, msg);
-        FacesContext.getCurrentInstance().addMessage("successInfo", facesMsg);
-    }
 
     public static enum PersistAction {
         CREATE,

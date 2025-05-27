@@ -32,24 +32,23 @@ public class OrdemController implements Serializable {
         return selected;
     }
 
-    public void setSelected(OrdemEntity selected) {
-        this.selected = selected;
+    public void setOrdem(OrdemEntity ordem) {
+        this.ordem = ordem;
     }
 
     public OrdemEntity getOrdem() {
         return ordem;
     }
 
-    public void setOrdem(OrdemEntity ordem) {
-        this.ordem = ordem;
+    public void setOrdemList(List<OrdemEntity> ordemList) {
+        this.ordemList = ordemList;
     }
-
     public List<OrdemEntity> getOrdemList() {
         return ejbFacade.buscarTodos();
     }
 
-    public void setOrdemList(List<OrdemEntity> ordemList) {
-        this.ordemList = ordemList;
+    public void setSelected(OrdemEntity selected) {
+        this.selected = selected;
     }
 
     /**
@@ -78,15 +77,16 @@ public class OrdemController implements Serializable {
                 "Registro excluído com sucesso!");
     }
 
+    public static void addSuccessMessage(String msg) {
+        FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_INFO, msg, msg);
+        FacesContext.getCurrentInstance().addMessage("successInfo", facesMsg);
+    }
+    
     public static void addErrorMessage(String msg) {
         FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_ERROR, msg, msg);
         FacesContext.getCurrentInstance().addMessage(null, facesMsg);
     }
 
-    public static void addSuccessMessage(String msg) {
-        FacesMessage facesMsg = new FacesMessage(FacesMessage.SEVERITY_INFO, msg, msg);
-        FacesContext.getCurrentInstance().addMessage("successInfo", facesMsg);
-    }
 
     public static enum PersistAction {
         CREATE,
