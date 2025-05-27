@@ -1,0 +1,161 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">
+        <h:outputText value="Cidade"></h:outputText>
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="frmList">   
+            <p:growl id="growl" showDetail="true" />
+            <h:panelGroup id="pngList">                 
+                <p:fieldset toggleable="true">
+                    <p:dataTable id="datalist" value="#{cidadeController.cidadeAll()}" var="item"   
+                                 selectionMode="single" selection="#{cidadeController.selected}"
+                                 widgetVar="datalistCidadeWidgetVar"
+                                 rowKey="#{item.id}"
+                                 paginator="true"
+                                 rows="5"
+                                 rowsPerPageTemplate="5,10,50,100"
+                                 emptyMessage="Nenhuma cidade cadastrada..."
+                                 >
+                        <!--Ação AJAX para atualizar somente os botões definidos em update -->
+                        <!--quando selecionado ou não -->
+                        <p:ajax event="rowSelect"   update="btnEdit btnDelete btnView"/>
+                        <p:ajax event="rowUnselect" update="btnEdit btnDelete btnView"/>
+
+                        <p:column width="4%" sortBy="#{item.id}" filterBy="#{item.id}">
+                            <f:facet name="header">
+                                <h:outputText value="ID"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </p:column>
+
+                        <p:column width="10%" sortBy="#{item.nome}" filterBy="#{item.nome}">
+                            <f:facet name="header">
+                                <h:outputText value="Nome"/>
+                            </f:facet>
+                            <h:outputText value="#{item.nome}"/>
+                        </p:column>
+
+                        <p:column width="10%" sortBy="#{item.ufenum}" filterBy="#{item.ufenum}">
+                            <f:facet name="header">
+                                <h:outputText value="UF"/>
+                            </f:facet>
+                            <h:outputText value="#{item.ufenum}"/>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <!--Botão utilizado para abrir a modal de criação -->
+                            <p:commandButton id="btnCreate" value="Incluir Cidade"  icon="pi pi-file" 
+                                             actionListener="#{cidadeController.prepareAdicionar()}"
+                                             update=":CreateForm"
+                                             oncomplete="PF('dlgCreate').show()"/>  
+
+                            <!--Botão utilizado para abrir a modal de edição -->
+                            <p:commandButton id="btnEdit" icon="pi pi-user-edit"  value="Editar Cidade" 
+                                             update=":EditForm" oncomplete="PF('dlgEdit').show()" 
+                                             disabled="#{empty cidadeController.selected}"/>
+
+                            <!--Botão utilizado para excluir o registro selecionado-->                            
+                            <p:commandButton id="btnDelete" icon="pi pi-trash"  value="Excluir Cidade" 
+                                             actionListener="#{cidadeController.deletar()}" update=":frmList" 
+                                             disabled="#{empty cidadeController.selected}">
+                                <p:confirm header="Confirmar Exclusão" message="Você confirma exclusão do registro?" 
+                                           icon="ui-icon-alert"  />
+                            </p:commandButton>
+
+                            <!--Botão utilizado para abrir a modal de visualização -->
+                            <p:commandButton id="btnView" icon="pi pi-user-edit"  value="Detalhes da Cidade" 
+                                             update="formView" oncomplete="PF('dlgView').show()" 
+                                             disabled="#{empty cidadeController.selected}"/>
+
+                        </f:facet>
+                    </p:dataTable>                    
+                </p:fieldset>
+
+                <!--Diálogo para confirmação da exclusão -->
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="fa fa-times" />
+                </p:confirmDialog>
+
+            </h:panelGroup>
+        </h:form>
+
+        <!--Inicio do diálogo de criação-->
+        <p:dialog widgetVar="dlgCreate" modal="true" resizable="false" appendTo="@(body)" header="Criar Cidade">
+            <h:form id="CreateForm">
+                <p:growl id="growl" showDetail="true" />
+                <h:panelGroup id="display">
+                    <h:panelGrid columns="2" rendered="#{cidadeController.cidade != null}">
+                        <p:outputLabel id="oplNome" value="Nome: " for="iptNome"/>
+                        <p:inputText id="iptNome" size="40" label="Nome" required="true" 
+                                     requiredMessage="O atributo nome é obrigatório"
+                                     value="#{cidadeController.cidade.nome}" maxlength="50" />   
+
+                        <p:outputLabel id="oplUfenum" value="UF: " for="iptUfenum"/>
+                        <p:inputText id="iptUfenum" size="10" label="UF" required="true" 
+                                     requiredMessage="O atributo uf é obrigatório"
+                                     value="#{cidadeController.cidade.ufenum}" maxlength="2" />   
+
+                    </h:panelGrid>
+                    <p:commandButton actionListener="#{cidadeController.adicionar}" 
+                                     value="Cadastrar" icon="pi pi-save"
+                                     update="display,:frmList" 
+                                     onclick="dlgCreate.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+        <!--Inicio do diálogo de edição-->
+        <p:dialog widgetVar="dlgEdit" modal="true" resizable="false" appendTo="@(body)" header="Editar Cidade">
+            <h:form id="EditForm">
+                <p:growl id="growl" showDetail="true" />
+                <h:panelGroup id="display">
+                    <h:panelGrid columns="2" rendered="#{cidadeController.selected != null}">
+                        <p:outputLabel id="oplNome" value="Nome: " for="iptNome"/>
+                        <p:inputText id="iptNome" size="40" label="Nome" required="true" 
+                                     requiredMessage="O atributo nome é obrigatório"
+                                     value="#{cidadeController.selected.nome}" maxlength="50" />   
+
+                        <p:outputLabel id="oplUfenum" value="UF: " for="iptUfenum"/>
+                        <p:inputText id="iptUfenum" size="10" label="UF" required="true" 
+                                     requiredMessage="O atributo uf é obrigatório"
+                                     value="#{cidadeController.selected.ufenum}" maxlength="2" />   
+                        
+                    </h:panelGrid >
+                    <p:commandButton actionListener="#{cidadeController.editar()}" 
+                                     value="Salvar" icon="pi pi-save"
+                                     update="display,:frmList" 
+                                     onclick="dlgEdit.hide()"/>
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Visualizar Detalhes da Cidade" widgetVar="dlgView"  height="250" 
+                  width="500" showEffect="fade" modal="true">
+            <h:form id="formView">
+                <h:panelGrid id="pngView" columns="2" rendered="#{cidadeController.selected != null}">    
+                    <p:outputLabel value="ID:" />
+                    <p:outputLabel value="#{cidadeController.selected.id}"  />
+
+                    <p:outputLabel value="Nome: " />
+                    <p:outputLabel value="#{cidadeController.selected.nome}" />
+
+                    <p:outputLabel value="UF: " />
+                    <p:outputLabel value="#{cidadeController.selected.ufenum}" />
+
+                </h:panelGrid>   
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+
+</ui:composition>
+
+
